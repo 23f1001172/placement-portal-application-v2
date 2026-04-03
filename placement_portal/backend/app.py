@@ -1,6 +1,7 @@
 from flask import Flask, app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_cors import CORS
 from backend.config import Config
 from werkzeug.security import generate_password_hash
 
@@ -18,7 +19,8 @@ def load_user(user_id):
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-
+    CORS(app, supports_credentials=True)
+    
     db.init_app(app)
     login_manager.init_app(app)
 
@@ -34,6 +36,8 @@ def create_app():
     from backend.routes.admin import admin_bp
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
+    from backend.routes.company import company_bp
+    app.register_blueprint(company_bp, url_prefix='/api/company')
 
     return app
 

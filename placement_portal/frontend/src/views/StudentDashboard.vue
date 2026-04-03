@@ -16,8 +16,11 @@
     <h4 class="mt-4">My Applications</h4>
     <ul>
       <li v-for="a in applications" :key="a.job">
-        {{ a.job }} - {{ a.company }} → {{ a.status }}
+        {{ a.job }} - {{ a.company }}
+        <br />
+        Status: <b>{{ a.status }}</b> | Applied on: {{ a.date }}
       </li>
+
     </ul>
   </div>
 </template>

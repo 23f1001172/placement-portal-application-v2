@@ -82,10 +82,12 @@ def my_applications():
         result.append({
             "job": a.job.job_title,
             "company": a.job.company.company_name,
-            "status": a.application_status
+            "status": a.application_status,
+            "date": a.application_date.strftime("%Y-%m-%d")
         })
 
     return jsonify(result)
+
 
 @student_bp.route('/update_profile', methods=['POST'])
 @login_required

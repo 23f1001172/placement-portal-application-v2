@@ -129,3 +129,18 @@ def blacklist_user(id):
     db.session.commit()
 
     return jsonify({"message": "User blacklisted"})
+
+@admin_bp.route('/applications')
+@login_required
+@admin_required
+def all_applications():
+    apps = Application.query.all()
+
+    return jsonify([
+        {
+            "student": a.student.student_roll_number,
+            "job": a.job.job_title,
+            "company": a.job.company.company_name,
+            "status": a.application_status
+        } for a in apps
+    ])

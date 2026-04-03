@@ -5,6 +5,7 @@ from backend.models.company import Company
 from backend.models.job import Job
 from backend.models.application import Application
 from backend.models.student import Student
+from backend.models.placement import Placement
 from backend.app import db
 
 company_bp = Blueprint('company', __name__)
@@ -85,18 +86,42 @@ def get_applications(job_id):
 @login_required
 @company_required
 def update_application(id):
-    data = request.get_json()
+    data = request.get_json() or {}
 
     app = Application.query.get(id)
 
     if not app:
         return jsonify({"message": "Application not found"}), 404
 
-    app.application_status = data.get('status')
+    company = Company.query.filter_by(user_id=current_user.id).first()
 
+    if app.job.company_id != company.id:
+        return jsonify({"message": "Unauthorized"}), 403
+
+    status = data.get('status')
+
+    allowed = ["shortlisted", "interview", "selected", "rejected"]
+
+    if status not in allowed:
+        return jsonify({"message": "Invalid status"}), 400
+
+    existing = Placement.query.filter_by(application_id=app.id).first()
+
+    if status == "selected" and not existing:
+        placement = Placement(
+            student_id=app.student_id,
+            company_id=app.job.company_id,
+            application_id=app.id,
+            position=app.job.job_title,
+            salary=app.job.job_salary
+        )
+        db.session.add(placement)
+
+    app.application_status = status
     db.session.commit()
 
-    return jsonify({"message": "Status updated"})
+    return jsonify({"message": "Updated"})
+
 
 @company_bp.route('/close_job/<int:id>', methods=['POST'])
 @login_required

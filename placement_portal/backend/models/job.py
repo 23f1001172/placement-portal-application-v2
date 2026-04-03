@@ -13,5 +13,7 @@ class Job(db.Model):
     job_type = db.Column(db.String(50)) # 'full-time', 'part-time', 'internship'
     job_requirements = db.Column(db.Text)
     job_posted_date = db.Column(db.DateTime, default = datetime.utcnow)
+    job_status = db.Column(db.String(50), default='pending')
+
 
     applications = db.relationship('Application', backref = 'job', lazy = True) 

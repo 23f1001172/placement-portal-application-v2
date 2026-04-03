@@ -5,6 +5,7 @@ from backend.models.student import Student
 from backend.models.job import Job
 from backend.models.application import Application
 from backend.app import db
+from backend.tasks import export_student_applications
 
 student_bp = Blueprint('student', __name__)
 
@@ -104,3 +105,16 @@ def update_profile():
     db.session.commit()
 
     return jsonify({"message": "Profile updated"})
+
+@student_bp.route('/export', methods=['POST'])
+@login_required
+@student_required
+def export_data():
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    task = export_student_applications.delay(student.id)
+
+    return jsonify({
+        "message": "Export started",
+        "task_id": task.id
+    })

@@ -14,6 +14,9 @@
     </ul>
 
     <h4 class="mt-4">My Applications</h4>
+    <button @click="exportData" class="btn btn-warning mb-3">
+      Export Applications
+    </button>
     <ul>
       <li v-for="a in applications" :key="a.job">
         {{ a.job }} - {{ a.company }}
@@ -56,6 +59,15 @@ export default {
     async searchJobs() {
       const res = await axios.get(`http://127.0.0.1:5000/api/student/search?q=${this.search}`, { withCredentials: true })
       this.jobs = res.data
+    },
+
+    async exportData() {
+     await axios.post(
+        'http://127.0.0.1:5000/api/student/export',
+    {},
+    { withCredentials: true }
+    )
+    alert("Export started. Check exports folder later.")
     }
   }
 }

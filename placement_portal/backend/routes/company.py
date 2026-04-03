@@ -136,3 +136,14 @@ def close_job(id):
     db.session.commit()
 
     return jsonify({"message": "Job closed"})
+
+@company_bp.route('/export', methods=['POST'])
+@login_required
+@company_required
+def export_report():
+    from backend.tasks import generate_company_report  # 👈 move here
+
+    company = Company.query.filter_by(user_id=current_user.id).first()
+    task = generate_company_report.delay(company.id)
+
+    return jsonify({"message": "Report generating"})

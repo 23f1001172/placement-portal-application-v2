@@ -6,12 +6,14 @@ from backend.models.job import Job
 from backend.models.application import Application
 from backend.app import db
 from backend.tasks import export_student_applications
+from backend.app import cache
 
 student_bp = Blueprint('student', __name__)
 
 @student_bp.route('/jobs')
 @login_required
 @student_required
+@cache.cached(timeout = 60)
 def get_jobs():
     jobs = Job.query.filter_by(job_status="approved").all()
 
@@ -28,6 +30,7 @@ def get_jobs():
 @student_bp.route('/search')
 @login_required
 @student_required
+@cache.cached(timeout = 60, query_string = True)
 def search_jobs():
     q = request.args.get('q')
 
@@ -67,6 +70,9 @@ def apply_job(job_id):
 
     db.session.add(app)
     db.session.commit()
+
+    from backend.app import cache
+    cache.clear()
 
     return jsonify({"message": "Applied successfully"})
 

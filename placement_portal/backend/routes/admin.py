@@ -7,6 +7,8 @@ from backend.models.student import Student
 from backend.models.job import Job
 from backend.models.application import Application
 from backend.app import db
+from backend.app import cache
+
 
 admin_bp = Blueprint('admin', __name__)
 @admin_bp.route('/dashboard')
@@ -54,6 +56,9 @@ def approve_company(id):
     company.user.is_approved = True
     db.session.commit()
 
+    from backend.app import cache
+    cache.clear()
+
     return jsonify({"message": "Company approved"})
 
 @admin_bp.route('/remove_company/<int:id>', methods=['DELETE'])
@@ -82,6 +87,9 @@ def approve_job(id):
     job.job_status = "approved"
     db.session.commit()
 
+    from backend.app import cache
+    cache.clear()
+
     return jsonify({"message": "Job approved"})
 
 @admin_bp.route('/jobs')
@@ -104,6 +112,7 @@ def get_jobs():
 @admin_bp.route('/search_companies')
 @login_required
 @admin_required
+@cache.cached(timeout = 60, query_string = True)
 def search_companies():
     query = request.args.get('q')
 

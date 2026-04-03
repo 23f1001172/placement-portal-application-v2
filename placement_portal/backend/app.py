@@ -2,11 +2,13 @@ from flask import Flask, app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_cors import CORS
+from flask_caching import Cache
 from backend.config import Config
 from werkzeug.security import generate_password_hash
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+cache = Cache()
 login_manager.login_view = "login"
 
 
@@ -19,6 +21,12 @@ def load_user(user_id):
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.config['CACHE_TYPE'] = 'RedisCache'
+    app.config['CACHE_REDIS_URL'] = 'redis://localhost:6379/0'
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 60  # 1 min
+
+    cache.init_app(app)
+
     CORS(app, supports_credentials=True)
 
     db.init_app(app)

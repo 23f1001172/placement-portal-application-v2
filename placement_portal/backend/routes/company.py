@@ -46,6 +46,9 @@ def create_job():
     db.session.add(job)
     db.session.commit()
 
+    from backend.app import cache
+    cache.clear()
+
     return jsonify({"message": "Job created, waiting for admin approval"})
 
 @company_bp.route('/jobs')
@@ -120,6 +123,9 @@ def update_application(id):
     app.application_status = status
     db.session.commit()
 
+    from backend.app import cache
+    cache.clear()
+
     return jsonify({"message": "Updated"})
 
 
@@ -134,6 +140,9 @@ def close_job(id):
 
     job.job_status = "closed"
     db.session.commit()
+
+    from backend.app import cache
+    cache.clear()
 
     return jsonify({"message": "Job closed"})
 

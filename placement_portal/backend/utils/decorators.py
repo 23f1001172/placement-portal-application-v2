@@ -25,3 +25,15 @@ def company_required(f):
 
         return f(*args, **kwargs)
     return decorated
+
+def student_required(f):
+    from functools import wraps
+    from flask_login import current_user
+    from flask import jsonify
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role != "student":
+            return jsonify({"message": "Student access required"}), 403
+        return f(*args, **kwargs)
+    return decorated

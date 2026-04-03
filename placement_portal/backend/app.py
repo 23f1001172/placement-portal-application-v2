@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from backend.config import Config
@@ -30,6 +30,10 @@ def create_app():
 
     from backend.routes.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api')
+
+    from backend.routes.admin import admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/api/admin')
+
 
     return app
 

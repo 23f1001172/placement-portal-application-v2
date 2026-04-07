@@ -25,7 +25,7 @@ def register():
         email=email,
         password=password,
         role=role,
-        is_approved=False if role == "company" else True
+        is_approved=False
     )
 
     db.session.add(user)
@@ -53,14 +53,20 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-    if not user or not check_password_hash(user.password, password):
-        return jsonify({"message": "Invalid credentials"}), 401
+    if not user:
+        return jsonify({"message": "User not registered please register first"}), 404
 
-    if user.role == "company" and not user.is_approved:
-        return jsonify({"message": "Company not approved by admin"}), 403
+    if not check_password_hash(user.password, password):
+        return jsonify({"message": "Invalid credentials"}), 401
 
     if user.is_blacklisted:
         return jsonify({"message": "User is blacklisted"}), 403
+
+    if user.is_rejected:
+        return jsonify({"message": "Your registration has been rejected by the admin"}), 403
+
+    if not user.is_approved and user.role != "admin":
+        return jsonify({"message": "Account not approved by admin"}), 403
 
 
     login_user(user)

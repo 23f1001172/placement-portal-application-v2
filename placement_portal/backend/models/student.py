@@ -6,11 +6,13 @@ class Student(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
 
     student_roll_number = db.Column(db.String(20))
+    student_batch = db.Column(db.String(20))   
     student_department = db.Column(db.String(100))
 
     student_education = db.Column(db.Text)
     student_skills = db.Column(db.Text)
-    student_resume = db.Column(db.String(200)) # Path to resume file
-
+    student_cgpa = db.Column(db.Float, default=0.0) 
+    student_resume = db.Column(db.String(200)) 
+    
     applications = db.relationship('Application', backref = 'student', lazy = True)
     placements = db.relationship('Placement', backref = 'student', lazy = True) 

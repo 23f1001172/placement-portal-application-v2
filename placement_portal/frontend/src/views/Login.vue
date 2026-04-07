@@ -6,6 +6,9 @@
     <input v-model="password" type="password" placeholder="Password" class="form-control mb-2" />
 
     <button @click="login" class="btn btn-primary">Login</button>
+    <div class="mt-3">
+      <router-link to="/register">Register as a company or student</router-link>
+    </div>
   </div>
 </template>
 
@@ -25,7 +28,7 @@ export default {
         const res = await axios.post('http://127.0.0.1:5000/api/login', {
           email: this.email,
           password: this.password
-        })
+        }, { withCredentials: true })
 
         const role = res.data.role
 

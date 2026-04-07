@@ -9,7 +9,11 @@ from werkzeug.security import generate_password_hash
 db = SQLAlchemy()
 login_manager = LoginManager()
 cache = Cache()
-login_manager.login_view = "login"
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    from flask import jsonify
+    return jsonify({"message": "Unauthorized. Please log in."}), 401
 
 
 @login_manager.user_loader
@@ -18,12 +22,17 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+import os
+
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='static')
     app.config.from_object(Config)
     app.config['CACHE_TYPE'] = 'RedisCache'
     app.config['CACHE_REDIS_URL'] = 'redis://localhost:6379/0'
     app.config['CACHE_DEFAULT_TIMEOUT'] = 60  # 1 min
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     cache.init_app(app)
 

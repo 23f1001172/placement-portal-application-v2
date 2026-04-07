@@ -14,6 +14,11 @@ class Job(db.Model):
     job_requirements = db.Column(db.Text)
     job_posted_date = db.Column(db.DateTime, default = datetime.utcnow)
     job_status = db.Column(db.String(50), default='pending')
+    job_spots = db.Column(db.Integer, default=1)  
 
+    job_min_cgpa = db.Column(db.Float, default=0.0)
+    job_required_branch = db.Column(db.String(100)) 
+    job_required_batch = db.Column(db.String(50)) 
+    job_deadline = db.Column(db.DateTime)
 
     applications = db.relationship('Application', backref = 'job', lazy = True) 

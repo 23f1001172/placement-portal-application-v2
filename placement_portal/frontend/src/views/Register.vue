@@ -12,6 +12,7 @@
     </select>
 
     <button @click="register" class="btn btn-success">Register</button>
+    <p class="mt-3">Already have an account? <router-link to="/">Login here</router-link></p>
   </div>
 </template>
 
@@ -37,7 +38,7 @@ export default {
           role: this.role
         })
 
-        alert("Registered successfully")
+        alert("Registered successfully. Waiting for admin's approval. Only after approval will you be able to login.")
         this.$router.push('/')
       } catch (err) {
         alert(err.response.data.message)
